@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Pizza = (props) => {
-    const { values, inputChange, toppingsChange, gluten, submit } = props;
+    const { values, inputChange, toppingsChange, gluten, submit, disabled } = props;
 
     const onInputChange = (evt) => {
         const { name, value } = evt.target;
-        inputChange(name, value)
+        inputChange(name, value);
     };
 
     const onToppingsChange = (evt) => {
@@ -21,7 +21,6 @@ const Pizza = (props) => {
     const onSubmit = evt => {
         evt.preventDefault();
         submit();
-        window.location = 'http://localhost:3000/pizza/order';
     }
 
   return(
@@ -140,8 +139,11 @@ const Pizza = (props) => {
               </div>
 
               <div className='submit-section'>
+                  <label>Name</label>
+                  <input type='text' name='name' value={values.name} onChange={onInputChange} placeholder='Type your name...'/>
+                  <label>Quantity</label>
                   <input type='number' name='quantity' min={1} max={99} value={values.quantity} onChange={onInputChange}/>
-                  <button type='submit'>Add to Order</button>
+                  <button disabled={disabled} type='submit'>Add to Order</button>
               </div>
           </form>
       </div>

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Switch, Link, Route } from 'react-router-dom';
 import styled from 'styled-components';
+import * as yup from 'yup'
 
 import Home from './components/Home';
 import Pizza from './components/Pizza';
 import Order from './components/Order';
+
+import formSchema from './validation/formSchema';
 
 const NavBar = styled.header`
   display: flex;
@@ -31,6 +34,7 @@ const NavBar = styled.header`
 `;
 
 const initFormVals = {
+  name: '',
   size: '',
   sauce: '',
   toppings: {
@@ -49,14 +53,24 @@ const initFormVals = {
     pineapple: false,
     xcheese: false
   },
+  toppingcount: 0,
   glutenfree: false,
   spinstructions: '',
   quantity: 1
 }
 
+const initFormErrors = {
+  name: '',
+  size: '',
+  sauce: '',
+  toppingcount: ''
+}
+
 const App = () => {
   const [formValues, setFormValues] = useState(initFormVals);
   const [order, setOrder] = useState(null);
+  const [formErrors, setFormErrors] = useState(initFormErrors);
+  const [disabled, setDisabled] = useState()
 
   const onInputChange = (name, value) => {
     setFormValues({
@@ -72,7 +86,8 @@ const App = () => {
         toppings: {
           ...formValues.toppings,
           [name]: true
-        }
+        },
+        toppingcount: formValues.toppingcount + 1
       })
     } else {
       setFormValues({
@@ -80,7 +95,8 @@ const App = () => {
         toppings: {
           ...formValues.toppings,
           [name]: false
-        }
+        },
+        toppingcount: formValues.toppingcount - 1
       })
     }
   };
@@ -101,6 +117,7 @@ const App = () => {
 
   const submit = () => {
     const cleanForm = {
+      name: formValues.name.trim(),
       instructions: formValues.spinstructions.trim(),
       glutenfree: formValues.glutenfree,
       quantity: formValues.quantity,
@@ -117,7 +134,29 @@ const App = () => {
 
     setOrder(cleanForm)
     setFormValues(initFormVals);
-  }
+  };
+
+  useEffect(() => {
+    console.log(formValues.toppingcount)
+    yup
+      .reach(formSchema, 'toppingcount')
+      .validate(formValues.toppingcount)
+      .then(valid => {
+        setFormErrors({
+          ...formErrors,
+          toppingcount: ""
+        })
+      }).catch(err => {
+        setFormErrors({
+          ...formErrors,
+          toppingcount: err.message
+        })
+      });
+  }, [formValues.toppingcount]);
+
+  useEffect(() => {
+    formSchema.isValid(formValues).then(valid => setDisabled(!valid))
+  }, [formValues])
 
   return (
     <div>
@@ -137,7 +176,7 @@ const App = () => {
         </Route>
 
         <Route path='/pizza'>
-          <Pizza submit={submit} values={formValues} inputChange={onInputChange} toppingsChange={onToppingsChange} gluten={wantsGluten}/>
+          <Pizza disabled={disabled} errors={formErrors} submit={submit} values={formValues} inputChange={onInputChange} toppingsChange={onToppingsChange} gluten={wantsGluten}/>
         </Route>
 
         <Route path='/'>

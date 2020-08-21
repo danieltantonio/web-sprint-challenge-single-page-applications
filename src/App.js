@@ -70,7 +70,7 @@ const App = () => {
   const [formValues, setFormValues] = useState(initFormVals);
   const [order, setOrder] = useState(null);
   const [formErrors, setFormErrors] = useState(initFormErrors);
-  const [disabled, setDisabled] = useState()
+  const [disabled, setDisabled] = useState();
 
   const onInputChange = (name, value) => {
     setFormValues({
@@ -134,6 +134,7 @@ const App = () => {
 
     setOrder(cleanForm)
     setFormValues(initFormVals);
+    
   };
 
   useEffect(() => {

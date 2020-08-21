@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Switch, Link, Route } from 'react-router-dom';
+import { Switch, Link, Route, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import * as yup from 'yup'
 
@@ -71,6 +71,8 @@ const App = () => {
   const [order, setOrder] = useState(null);
   const [formErrors, setFormErrors] = useState(initFormErrors);
   const [disabled, setDisabled] = useState();
+  const history = useHistory();
+
 
   const onInputChange = (name, value) => {
     setFormValues({
@@ -132,9 +134,9 @@ const App = () => {
       }
     });
 
-    setOrder(cleanForm)
+    history.push('/pizza/order');
+    // setOrder(cleanForm)
     setFormValues(initFormVals);
-    
   };
 
   useEffect(() => {
